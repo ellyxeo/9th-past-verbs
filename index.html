@@ -1,0 +1,717 @@
+<!DOCTYPE html><html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Test Rápido | Past Regular and Irregular Verbs</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    :root {
+      --bg1: #6a11cb;
+      --bg2: #2575fc;
+      --card: rgba(255,255,255,.92);
+      --text: #182033;
+      --muted: #667085;
+      --accent: #ff6b6b;
+      --accent2: #00c2a8;
+      --accent3: #ffd166;
+      --shadow: 0 20px 50px rgba(0,0,0,.18);
+      --radius: 24px;
+    }* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(255,255,255,.18), transparent 28%),
+    radial-gradient(circle at bottom right, rgba(255,255,255,.14), transparent 20%),
+    linear-gradient(135deg, var(--bg1), var(--bg2));
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 112px 16px 30px;
+}
+
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  backdrop-filter: blur(14px);
+  background: rgba(9, 16, 36, 0.62);
+  color: #fff;
+  border-bottom: 1px solid rgba(255,255,255,.14);
+  box-shadow: 0 8px 30px rgba(0,0,0,.15);
+}
+
+.topbar-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 12px 16px;
+  display: grid;
+  grid-template-columns: 1.2fr .8fr .8fr .8fr 1.2fr;
+  gap: 10px;
+  align-items: center;
+}
+
+.chip {
+  background: rgba(255,255,255,.10);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 16px;
+  padding: 10px 12px;
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.chip strong { color: #fff; }
+.chip span { color: rgba(255,255,255,.85); }
+
+.progress-wrap {
+  max-width: 1100px;
+  margin: 0 auto 16px;
+  padding: 0 16px;
+}
+
+.progress-line {
+  height: 14px;
+  background: rgba(255,255,255,.18);
+  border-radius: 999px;
+  overflow: hidden;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,.12);
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #ffd166, #06d6a0, #4cc9f0);
+  border-radius: inherit;
+  transition: width .35s ease;
+}
+
+.progress-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #fff;
+  font-size: 14px;
+  margin-top: 8px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.hero {
+  background: linear-gradient(135deg, rgba(255,255,255,.20), rgba(255,255,255,.08));
+  border: 1px solid rgba(255,255,255,.22);
+  color: #fff;
+  border-radius: 28px;
+  padding: 22px;
+  margin-bottom: 18px;
+  box-shadow: var(--shadow);
+}
+
+.hero h1, .hero p { margin: 0; }
+.hero h1 { font-size: clamp(1.5rem, 2.8vw, 2.5rem); margin-bottom: 8px; }
+.hero p { color: rgba(255,255,255,.92); line-height: 1.45; }
+
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid rgba(255,255,255,.4);
+  overflow: hidden;
+}
+
+.slide {
+  display: none;
+  padding: 24px;
+  animation: fadeIn .28s ease;
+}
+.slide.active { display: block; }
+
+@keyframes fadeIn {
+  from { opacity: .45; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ffe08a, #ffd166);
+  color: #543b00;
+  font-weight: 700;
+  box-shadow: 0 8px 20px rgba(255, 209, 102, .35);
+}
+
+.question {
+  font-size: clamp(1.15rem, 2vw, 1.55rem);
+  line-height: 1.35;
+  margin: 10px 0 18px;
+  color: #111827;
+  font-weight: 800;
+}
+
+.subtext { color: var(--muted); margin-bottom: 16px; }
+
+.options {
+  display: grid;
+  gap: 12px;
+}
+
+.option {
+  border: 2px solid #e5e7eb;
+  border-radius: 18px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: .2s ease;
+  background: #fff;
+  user-select: none;
+}
+
+.option:hover {
+  border-color: #93c5fd;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(37, 117, 252, .10);
+}
+
+.option input { transform: scale(1.1); }
+.option.correct { border-color: #22c55e; background: #ecfdf5; }
+.option.wrong { border-color: #ef4444; background: #fef2f2; }
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.field label {
+  font-weight: 700;
+  color: #374151;
+}
+
+.field input {
+  border: 2px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 14px 16px;
+  font-size: 1rem;
+  outline: none;
+  transition: .2s ease;
+}
+
+.field input:focus { border-color: #60a5fa; box-shadow: 0 0 0 4px rgba(96,165,250,.15); }
+
+.controls {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 18px 24px 24px;
+  border-top: 1px solid #e5e7eb;
+  background: linear-gradient(180deg, rgba(255,255,255,.4), rgba(255,255,255,.75));
+}
+
+button {
+  border: 0;
+  border-radius: 16px;
+  padding: 13px 18px;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+}
+
+button:hover { transform: translateY(-1px); }
+button:disabled { opacity: .55; cursor: not-allowed; transform: none; }
+
+.btn-primary {
+  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  color: #fff;
+  box-shadow: 0 14px 28px rgba(37,99,235,.22);
+}
+
+.btn-secondary {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #10b981, #06b6d4);
+  color: white;
+  box-shadow: 0 14px 28px rgba(16,185,129,.22);
+}
+
+.helper {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  color: #334155;
+  line-height: 1.45;
+}
+
+.footer-note {
+  color: rgba(255,255,255,.9);
+  text-align: center;
+  padding: 8px 16px 24px;
+  font-size: .95rem;
+}
+
+.tiny {
+  font-size: .92rem;
+  color: var(--muted);
+}
+
+.result-box {
+  text-align: center;
+  padding: 18px;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #fff7ed, #eff6ff);
+  border: 1px solid #fcd34d;
+  margin-top: 12px;
+}
+
+.score {
+  font-size: 3rem;
+  font-weight: 900;
+  line-height: 1;
+  background: linear-gradient(135deg, #f59e0b, #ef4444, #7c3aed);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin: 10px 0;
+}
+
+.locked {
+  opacity: .6;
+  pointer-events: none;
+}
+
+@media (max-width: 900px) {
+  .topbar-inner { grid-template-columns: 1fr 1fr; }
+  .row { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 640px) {
+  .app { padding-top: 132px; }
+  .topbar-inner { grid-template-columns: 1fr; }
+  .controls { flex-direction: column; }
+  .controls button { width: 100%; }
+  .slide { padding: 18px; }
+}
+
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="chip"><strong>Profesor:</strong> <span>José Eliseo Martínez</span></div>
+      <div class="chip"><strong>Escuela:</strong> <span>COEDUCA</span></div>
+      <div class="chip"><strong>Sección:</strong> <span>A</span></div>
+      <div class="chip"><strong>Grado:</strong> <span>Nineth</span></div>
+      <div class="chip"><strong>Nombre:</strong> <span id="headerName">Pendiente</span></div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-line"><div class="progress-bar" id="progressBar"></div></div>
+      <div class="progress-meta">
+        <span id="progressText">Progreso: 0/21</span>
+        <span id="saveText">Guardado automático activado</span>
+      </div>
+    </div>
+  </header>  <main class="app">
+    <section class="hero">
+      <h1>Past Regular and Irregular Verbs</h1>
+      <p>Test rápido tipo slides. Responde, avanza y al final descarga tu PDF para Classroom con la nota final en escala de 1 a 10.</p>
+    </section><section class="card" id="quizCard">
+  <div id="slidesContainer"></div>
+  <div class="controls">
+    <button class="btn-secondary" id="prevBtn">Anterior</button>
+    <button class="btn-primary" id="nextBtn">Siguiente</button>
+    <button class="btn-success" id="pdfBtn" style="display:none;">Descargar PDF</button>
+  </div>
+</section>
+
+<div class="footer-note">Tip: tus respuestas y nombre se guardan automáticamente en el navegador. Si sales y vuelves, sigue donde lo dejaste.</div>
+
+  </main>  <script>
+    const QUIZ_KEY = 'past_verbs_quiz_state_v1';
+    const NAME_KEY = 'past_verbs_quiz_name_v1';
+
+    const questions = [
+      { type: 'Selecciona el verbo regular.', question: '¿Cuál de estas opciones es un verbo regular en pasado?', options: ['went', 'played', 'took', 'saw'], correct: 1 },
+      { type: 'Selecciona el verbo irregular.', question: '¿Cuál de estas opciones es un verbo irregular en pasado?', options: ['walked', 'cleaned', 'broke', 'talked'], correct: 2 },
+      { type: 'Forma correcta en pasado.', question: '¿Cuál verbo está escrito correctamente en pasado?', options: ['stoped', 'stopped', 'stoppd', 'stoppping'], correct: 1 },
+      { type: 'Completa la oración.', question: 'Yesterday, she ____ to school.', options: ['go', 'goed', 'went', 'going'], correct: 2 },
+      { type: 'Selecciona la forma correcta.', question: 'El pasado de “watch” es:', options: ['watched', 'watchd', 'wached', 'watching'], correct: 0 },
+      { type: 'Selecciona el verbo irregular.', question: '¿Cuál es irregular?', options: ['asked', 'helped', 'made', 'opened'], correct: 2 },
+      { type: 'Selecciona el verbo regular.', question: '¿Cuál es regular?', options: ['ran', 'bought', 'painted', 'sang'], correct: 2 },
+      { type: 'Escoge la opción correcta.', question: 'They ____ a cake for the party.', options: ['bake', 'baked', 'baken', 'baking'], correct: 1 },
+      { type: 'Selecciona la forma correcta.', question: 'El pasado de “take” es:', options: ['taked', 'took', 'taken', 'taking'], correct: 1 },
+      { type: 'Completa la oración.', question: 'We ____ basketball after class.', options: ['played', 'play', 'plaied', 'playing'], correct: 0 },
+      { type: 'Selecciona el verbo irregular.', question: '¿Cuál de estas formas es irregular?', options: ['visited', 'jumped', 'found', 'laughed'], correct: 2 },
+      { type: 'Marca la correcta.', question: 'The students ____ the homework last night.', options: ['finish', 'finised', 'finished', 'finishing'], correct: 2 },
+      { type: 'Selecciona el verbo regular.', question: '¿Cuál está en pasado regular?', options: ['drove', 'closed', 'ate', 'had'], correct: 1 },
+      { type: 'Selecciona la forma correcta.', question: 'El pasado de “see” es:', options: ['seed', 'saw', 'seen', 'seeing'], correct: 1 },
+      { type: 'Escoge la respuesta correcta.', question: 'My father ____ a new phone yesterday.', options: ['buy', 'buyed', 'bought', 'brought'], correct: 2 },
+      { type: 'Selecciona el verbo correcto.', question: 'She ____ a letter to her friend.', options: ['write', 'wrote', 'written', 'writing'], correct: 1 },
+      { type: 'Selecciona el verbo regular.', question: '¿Cuál es regular?', options: ['slept', 'sent', 'called', 'gave'], correct: 2 },
+      { type: 'Marca la forma correcta.', question: 'They ____ late to class.', options: ['arrived', 'arrive', 'arriveded', 'arriving'], correct: 0 },
+      { type: 'Selecciona el verbo irregular.', question: '¿Cuál verbo es irregular?', options: ['smiled', 'opened', 'fell', 'worked'], correct: 2 },
+      { type: 'Última pregunta.', question: 'Which sentence is correct?', options: ['He goed home.', 'He went home.', 'He gone home.', 'He goes home yesterday.'], correct: 1 }
+    ];
+
+    const state = {
+      name: '',
+      current: 0,
+      answers: Array(questions.length).fill(null),
+      completed: false
+    };
+
+    const slidesContainer = document.getElementById('slidesContainer');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const pdfBtn = document.getElementById('pdfBtn');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+    const headerName = document.getElementById('headerName');
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+
+    function sanitizeForPdf(input) {
+      const text = String(input ?? '');
+      const withoutTags = text
+        .replace(/<\s*br\s*\/?\s*>/gi, ' ')
+        .replace(/<\s*\/p\s*>/gi, ' ')
+        .replace(/<\s*p[^>]*>/gi, ' ')
+        .replace(/<[^>]*>/g, ' ');
+
+      const replacements = {
+        '—': '-', '–': '-', '―': '-', '…': '...', '→': '->', '←': '<-',
+        '“': '"', '”': '"', '‘': "'", '’': "'", '´': "'", '•': '-', '✓': 'OK', '✗': 'X',
+        'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ú': 'u', 'ñ': 'n', 'ü': 'u',
+        'Á': 'A', 'É': 'E', 'Í': 'I', 'Ó': 'O', 'Ú': 'U', 'Ñ': 'N', 'Ü': 'U'
+      };
+
+      let clean = withoutTags;
+      for (const [bad, good] of Object.entries(replacements)) {
+        clean = clean.split(bad).join(good);
+      }
+
+      clean = clean
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^\x09\x0A\x0D\x20-\x7E]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      return clean;
+    }
+
+    function calcScore() {
+      const answered = state.answers.filter(v => v !== null).length;
+      const correct = state.answers.reduce((acc, ans, i) => acc + (ans === questions[i].correct ? 1 : 0), 0);
+      const percent = questions.length ? (correct / questions.length) : 0;
+      const score10 = Math.max(1, Math.min(10, Math.round(percent * 10 * 10) / 10));
+      return { answered, correct, total: questions.length, score10, percent };
+    }
+
+    function render() {
+      slidesContainer.innerHTML = '';
+
+      const intro = document.createElement('div');
+      intro.className = 'slide' + (state.current === 0 ? ' active' : '');
+      intro.innerHTML = `
+        <div class="slide-head">
+          <div class="badge">Slide 1 / ${questions.length + 1}</div>
+          <div class="tiny">Ingresa tu nombre para empezar</div>
+        </div>
+        <div class="question">Antes de comenzar, escribe tu nombre.</div>
+        <div class="row">
+          <div class="field" style="grid-column: 1 / -1;">
+            <label for="studentName">Nombre del estudiante</label>
+            <input id="studentName" type="text" placeholder="Ej. Ana López" value="${escapeHtml(state.name)}" autocomplete="name" />
+          </div>
+        </div>
+        <div class="helper">Tu nombre se usará en la parte superior y también dentro del PDF final.</div>
+      `;
+      slidesContainer.appendChild(intro);
+
+      questions.forEach((q, index) => {
+        const slide = document.createElement('div');
+        const slideNumber = index + 2;
+        slide.className = 'slide' + (state.current === slideNumber - 1 ? ' active' : '');
+        const answer = state.answers[index];
+        slide.innerHTML = `
+          <div class="slide-head">
+            <div class="badge">Slide ${slideNumber} / ${questions.length + 1}</div>
+            <div class="tiny">Pregunta ${index + 1} de ${questions.length}</div>
+          </div>
+          <div class="subtext">${escapeHtml(q.type)}</div>
+          <div class="question">${escapeHtml(q.question)}</div>
+          <div class="options">
+            ${q.options.map((opt, optIndex) => {
+              const checked = answer === optIndex ? 'checked' : '';
+              const correctClass = answer !== null && optIndex === q.correct ? 'correct' : '';
+              const wrongClass = answer !== null && answer === optIndex && optIndex !== q.correct ? 'wrong' : '';
+              return `
+                <label class="option ${correctClass} ${wrongClass}">
+                  <input type="radio" name="q${index}" value="${optIndex}" ${checked} />
+                  <span>${escapeHtml(opt)}</span>
+                </label>
+              `;
+            }).join('')}
+          </div>
+          <div class="helper">
+            ${answer === null
+              ? 'Selecciona una opción. Puedes volver y cambiar respuestas cuando quieras.'
+              : (answer === q.correct ? 'Bien ahí. Respuesta correcta.' : 'Ya quedó marcada. Puedes cambiarla si lo necesitas.')}
+          </div>
+        `;
+        slidesContainer.appendChild(slide);
+      });
+
+      const result = document.createElement('div');
+      result.className = 'slide' + (state.current === questions.length + 1 ? ' active' : '');
+      const score = calcScore();
+      result.innerHTML = `
+        <div class="slide-head">
+          <div class="badge">Slide ${questions.length + 2} / ${questions.length + 1}</div>
+          <div class="tiny">Resultado final</div>
+        </div>
+        <div class="question">¡Listo! Ya terminaste el test.</div>
+        <div class="result-box">
+          <div>Respuestas correctas: <strong>${score.correct}/${score.total}</strong></div>
+          <div class="score">${score.score10.toFixed(1)}</div>
+          <div class="tiny">Calificación en escala de 1 a 10</div>
+        </div>
+        <div class="helper">Al descargar el PDF se incluirán los datos generales, tu nombre, tus respuestas y la nota final.</div>
+      `;
+      slidesContainer.appendChild(result);
+
+      bindInputs();
+      updateUI();
+      saveState();
+    }
+
+    function bindInputs() {
+      const nameInput = document.getElementById('studentName');
+      if (nameInput) {
+        nameInput.addEventListener('input', e => {
+          state.name = e.target.value;
+          headerName.textContent = state.name.trim() || 'Pendiente';
+          saveState();
+        });
+      }
+
+      questions.forEach((q, index) => {
+        const radios = document.querySelectorAll(`input[name="q${index}"]`);
+        radios.forEach(radio => {
+          radio.addEventListener('change', e => {
+            state.answers[index] = Number(e.target.value);
+            saveState();
+            render();
+          });
+        });
+      });
+    }
+
+    function updateUI() {
+      const totalSlides = questions.length + 2;
+      const percent = ((state.current + 1) / totalSlides) * 100;
+      progressBar.style.width = `${percent}%`;
+      progressText.textContent = `Progreso: ${state.current + 1}/${totalSlides}`;
+
+      prevBtn.disabled = state.current === 0;
+      nextBtn.style.display = state.current === totalSlides - 1 ? 'none' : 'inline-block';
+      pdfBtn.style.display = state.current === totalSlides - 1 ? 'inline-block' : 'none';
+
+      document.querySelectorAll('.slide').forEach((slide, idx) => {
+        slide.classList.toggle('active', idx === state.current);
+      });
+
+      const currentIsQuizSlide = state.current > 0 && state.current <= questions.length;
+      if (currentIsQuizSlide) {
+        const qIndex = state.current - 1;
+        const answered = state.answers[qIndex];
+        const q = questions[qIndex];
+        document.querySelectorAll(`input[name="q${qIndex}"]`).forEach(input => {
+          const optIndex = Number(input.value);
+          const label = input.closest('.option');
+          label.classList.remove('correct', 'wrong');
+          if (answered !== null) {
+            if (optIndex === q.correct) label.classList.add('correct');
+            if (answered === optIndex && optIndex !== q.correct) label.classList.add('wrong');
+          }
+        });
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(QUIZ_KEY, JSON.stringify(state));
+        localStorage.setItem(NAME_KEY, state.name || '');
+        document.getElementById('saveText').textContent = 'Guardado automático: listo';
+      } catch (e) {
+        document.getElementById('saveText').textContent = 'No se pudo guardar automáticamente';
+      }
+    }
+
+    function loadState() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(QUIZ_KEY));
+        if (saved && typeof saved === 'object') {
+          state.name = saved.name || localStorage.getItem(NAME_KEY) || '';
+          state.current = Number.isInteger(saved.current) ? saved.current : 0;
+          state.answers = Array.isArray(saved.answers) && saved.answers.length === questions.length
+            ? saved.answers
+            : Array(questions.length).fill(null);
+          state.completed = !!saved.completed;
+        } else {
+          state.name = localStorage.getItem(NAME_KEY) || '';
+        }
+      } catch (e) {
+        state.name = '';
+      }
+      headerName.textContent = state.name.trim() || 'Pendiente';
+    }
+
+    function go(delta) {
+      const totalSlides = questions.length + 2;
+      state.current = Math.min(totalSlides - 1, Math.max(0, state.current + delta));
+      render();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    prevBtn.addEventListener('click', () => go(-1));
+    nextBtn.addEventListener('click', () => {
+      if (state.current === 0 && !state.name.trim()) {
+        alert('Escribe tu nombre para continuar.');
+        return;
+      }
+      go(1);
+    });
+
+    pdfBtn.addEventListener('click', () => {
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({ unit: 'pt', format: 'a4' });
+      const margin = 42;
+      const pageWidth = 595.28;
+      const usableWidth = pageWidth - margin * 2;
+      let y = 48;
+
+      const score = calcScore();
+      const today = new Date();
+      const dateStr = today.toLocaleDateString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit' });
+
+      function addWrapped(text, x, yPos, maxWidth, fontSize = 11, style = 'normal') {
+        pdf.setFont('helvetica', style);
+        pdf.setFontSize(fontSize);
+        const lines = pdf.splitTextToSize(sanitizeForPdf(text), maxWidth);
+        pdf.text(lines, x, yPos);
+        return yPos + (lines.length * (fontSize + 3));
+      }
+
+      function addLine() {
+        pdf.setDrawColor(215, 219, 223);
+        pdf.line(margin, y, pageWidth - margin, y);
+        y += 16;
+      }
+
+      pdf.setFillColor(37, 117, 252);
+      pdf.roundedRect(28, 24, pageWidth - 56, 86, 18, 18, 'F');
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(18);
+      pdf.text('Test Rapido - Past Regular and Irregular Verbs', margin, 54);
+      pdf.setFontSize(11);
+      pdf.setFont('helvetica', 'normal');
+      pdf.text(`Profesor: Jose Eliseo Martinez`, margin, 74);
+      pdf.text(`Escuela: COEDUCA | Seccion: A | Grado: Nineth`, margin, 90);
+      pdf.text(`Nombre: ${sanitizeForPdf(state.name || 'Sin nombre')}`, margin, 106);
+
+      y = 132;
+      pdf.setTextColor(17, 24, 39);
+      y = addWrapped(`Tema: Past Regular and Iregular Verbs`, margin, y, usableWidth, 12, 'bold');
+      y += 4;
+      y = addWrapped(`Fecha: ${dateStr} | Nota final: ${score.score10.toFixed(1)} / 10 | Correctas: ${score.correct}/${score.total}`, margin, y, usableWidth, 11, 'normal');
+      y += 6;
+      addLine();
+
+      questions.forEach((q, i) => {
+        const studentAns = state.answers[i];
+        const ansText = studentAns === null ? 'No respondida' : q.options[studentAns];
+        const correctText = q.options[q.correct];
+        const isCorrect = studentAns === q.correct;
+
+        const block = [
+          `Pregunta ${i + 1}: ${q.question}`,
+          `Tipo: ${q.type}`,
+          `Respuesta del estudiante: ${ansText}`,
+          `Respuesta correcta: ${correctText}`,
+          `Estado: ${isCorrect ? 'Correcta' : 'Incorrecta'}`
+        ].join('\n');
+
+        const lines = pdf.splitTextToSize(sanitizeForPdf(block), usableWidth);
+        const neededHeight = lines.length * 14 + 14;
+        if (y + neededHeight > 790) {
+          pdf.addPage();
+          y = 48;
+        }
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(11);
+        pdf.text(`Pregunta ${i + 1}`, margin, y);
+        y += 14;
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(10);
+        pdf.text(lines, margin, y);
+        y += lines.length * 13 + 10;
+        pdf.setDrawColor(230, 232, 236);
+        pdf.line(margin, y - 6, pageWidth - margin, y - 6);
+      });
+
+      pdf.save(`quiz_past_verbs_${sanitizeForPdf(state.name || 'estudiante').replace(/\s+/g, '_').toLowerCase()}.pdf`);
+    });
+
+    loadState();
+    render();
+
+    window.addEventListener('beforeunload', saveState);
+  </script></body>
+</html>
