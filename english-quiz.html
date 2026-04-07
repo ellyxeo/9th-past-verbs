@@ -1,0 +1,455 @@
+¡Claro que sí! Aquí tienes el archivo completo con todas las correcciones integradas.
+Simplemente copia todo este bloque, pégalo en tu editor de código, guárdalo y tu prueba estará lista para usarse.
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>English Quiz - Past Verbs | COEDUCA</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --purple: #7F77DD; --purple-light: #EEEDFE; --purple-dark: #3C3489;
+    --teal: #1D9E75; --teal-light: #E1F5EE; --teal-dark: #085041;
+    --coral: #D85A30; --coral-light: #FAECE7; --coral-dark: #712B13;
+    --pink: #D4537E; --pink-light: #FBEAF0; --pink-dark: #72243E;
+    --amber: #BA7517; --amber-light: #FAEEDA; --amber-dark: #633806;
+    --blue: #378ADD; --blue-light: #E6F1FB; --blue-dark: #0C447C;
+    --gray-light: #F1EFE8; --gray: #888780; --gray-dark: #444441;
+    --white: #fff; --text: #2C2C2A;
+  }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #EEEDFE 0%, #E1F5EE 50%, #FBEAF0 100%);
+    min-height: 100vh;
+    padding-top: 95px;
+  }
+  #fixed-header {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    background: linear-gradient(90deg, #26215C 0%, #085041 50%, #4B1528 100%);
+    color: white; padding: 10px 20px; box-shadow: 0 3px 18px rgba(0,0,0,0.35);
+  }
+  .header-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; }
+  .header-title { font-size: 17px; font-weight: 700; letter-spacing: 0.5px; }
+  .header-info { display: flex; gap: 10px; flex-wrap: wrap; font-size: 12px; opacity: 0.95; }
+  .header-info span { background: rgba(255,255,255,0.18); padding: 3px 10px; border-radius: 20px; }
+  .progress-bar-wrap { margin-top: 6px; background: rgba(255,255,255,0.2); border-radius: 10px; height: 7px; }
+  .progress-bar-fill { height: 7px; border-radius: 10px; background: linear-gradient(90deg, #FAC775, #5DCAA5); transition: width 0.4s ease; width: 0%; }
+  .progress-label { font-size: 11px; text-align: right; margin-top: 2px; opacity: 0.75; }
+  .main { max-width: 720px; margin: 0 auto; padding: 24px 16px 60px; }
+
+  /* WELCOME */
+  #welcome-screen { background: white; border-radius: 24px; padding: 44px 36px; text-align: center; box-shadow: 0 8px 40px rgba(127,119,221,0.18); }
+  .welcome-icon { font-size: 60px; margin-bottom: 14px; }
+  .welcome-title { font-size: 27px; font-weight: 800; color: var(--purple-dark); margin-bottom: 8px; }
+  .welcome-sub { color: var(--gray); font-size: 15px; margin-bottom: 28px; line-height: 1.6; }
+  .info-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 28px; }
+  .info-card { background: var(--purple-light); border-radius: 12px; padding: 13px 16px; text-align: left; }
+  .info-card .lbl { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--purple); font-weight: 700; }
+  .info-card .val { font-size: 14px; color: var(--purple-dark); font-weight: 600; margin-top: 3px; }
+  .name-section { margin-bottom: 22px; }
+  .name-section label { display: block; font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+  .name-section input {
+    width: 100%; padding: 14px 18px; border: 2px solid #D3D1C7; border-radius: 12px;
+    font-size: 16px; outline: none; transition: border-color 0.2s; font-family: inherit;
+  }
+  .name-section input:focus { border-color: var(--purple); }
+  .btn-start {
+    background: linear-gradient(135deg, var(--purple) 0%, var(--teal) 100%);
+    color: white; border: none; padding: 16px 48px; border-radius: 50px;
+    font-size: 17px; font-weight: 700; cursor: pointer; letter-spacing: 0.5px;
+    box-shadow: 0 4px 20px rgba(127,119,221,0.4); transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .btn-start:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(127,119,221,0.5); }
+
+  /* SLIDES */
+  .slide { display: none; animation: slideIn 0.4s ease; }
+  .slide.active { display: block; }
+  @keyframes slideIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+  .slide-card {
+    background: white; border-radius: 22px; padding: 34px 30px;
+    box-shadow: 0 6px 32px rgba(0,0,0,0.09); position: relative; overflow: hidden;
+    margin-bottom: 18px;
+  }
+  .slide-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px; }
+  .slide-card.cp::before { background: linear-gradient(90deg, var(--purple), var(--pink)); }
+  .slide-card.ct::before { background: linear-gradient(90deg, var(--teal), var(--blue)); }
+  .slide-card.cc::before { background: linear-gradient(90deg, var(--coral), var(--amber)); }
+  .slide-card.ck::before { background: linear-gradient(90deg, var(--pink), var(--purple)); }
+  .slide-card.cb::before { background: linear-gradient(90deg, var(--blue), var(--teal)); }
+  .slide-num { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 4px 14px; border-radius: 20px; margin-bottom: 14px; }
+  .cp .slide-num { background: var(--purple-light); color: var(--purple-dark); }
+  .ct .slide-num { background: var(--teal-light); color: var(--teal-dark); }
+  .cc .slide-num { background: var(--coral-light); color: var(--coral-dark); }
+  .ck .slide-num { background: var(--pink-light); color: var(--pink-dark); }
+  .cb .slide-num { background: var(--blue-light); color: var(--blue-dark); }
+  .type-badge { display: inline-block; font-size: 11px; padding: 3px 10px; border-radius: 10px; margin-bottom: 10px; font-weight: 700; margin-left: 8px; vertical-align: middle; }
+  .tb-r { background: var(--teal-light); color: var(--teal-dark); }
+  .tb-i { background: var(--coral-light); color: var(--coral-dark); }
+  .tb-m { background: var(--purple-light); color: var(--purple-dark); }
+  .tb-s { background: var(--amber-light); color: var(--amber-dark); }
+  .question-text { font-size: 19px; font-weight: 700; color: var(--text); line-height: 1.45; margin-bottom: 7px; }
+  .question-hint { font-size: 13px; color: var(--gray); margin-bottom: 22px; font-style: italic; }
+  .options-grid { display: grid; gap: 11px; }
+  .option-btn {
+    width: 100%; text-align: left; padding: 14px 18px; border-radius: 14px;
+    border: 2px solid #E8E6E0; background: var(--gray-light);
+    font-size: 15px; font-family: inherit; cursor: pointer; transition: all 0.2s;
+    color: var(--text); font-weight: 500; display: flex; align-items: center; gap: 12px;
+  }
+  .option-btn:hover:not(:disabled) { border-color: var(--purple); background: var(--purple-light); transform: translateX(4px); }
+  .opt-letter { width: 30px; height: 30px; border-radius: 50%; background: white; border: 2px solid #D3D1C7; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; flex-shrink: 0; }
+  .option-btn.correct { background: var(--teal-light); border-color: var(--teal); color: var(--teal-dark); }
+  .option-btn.correct .opt-letter { background: var(--teal); border-color: var(--teal); color: white; }
+  .option-btn.wrong { background: var(--coral-light); border-color: var(--coral); color: var(--coral-dark); }
+  .option-btn.wrong .opt-letter { background: var(--coral); border-color: var(--coral); color: white; }
+  .option-btn:disabled { cursor: default; }
+  .feedback-box { margin-top: 16px; padding: 13px 17px; border-radius: 12px; font-size: 14px; font-weight: 600; display: none; line-height: 1.5; }
+  .feedback-box.show { display: block; }
+  .feedback-box.correct { background: var(--teal-light); color: var(--teal-dark); border-left: 4px solid var(--teal); }
+  .feedback-box.wrong { background: var(--coral-light); color: var(--coral-dark); border-left: 4px solid var(--coral); }
+  .nav-row { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
+  .btn-nav { padding: 12px 28px; border-radius: 50px; border: none; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+  .btn-prev { background: var(--gray-light); color: var(--gray-dark); }
+  .btn-prev:hover { background: #D3D1C7; }
+  .btn-next { background: linear-gradient(135deg, var(--purple), var(--teal)); color: white; box-shadow: 0 4px 16px rgba(127,119,221,0.35); }
+  .btn-next:hover { transform: translateY(-1px); }
+
+  /* RESULTS */
+  #results-screen { display: none; }
+  .results-card { background: white; border-radius: 24px; padding: 46px 36px; text-align: center; box-shadow: 0 8px 40px rgba(0,0,0,0.1); }
+  .score-circle { width: 140px; height: 140px; border-radius: 50%; margin: 0 auto 22px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 40px; font-weight: 800; border: 6px solid; }
+  .grade-high { background: var(--teal-light); border-color: var(--teal); color: var(--teal-dark); }
+  .grade-mid { background: var(--amber-light); border-color: var(--amber); color: var(--amber-dark); }
+  .grade-low { background: var(--coral-light); border-color: var(--coral); color: var(--coral-dark); }
+  .score-label { font-size: 12px; font-weight: 600; opacity: 0.75; }
+  .results-title { font-size: 26px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+  .results-sub { color: var(--gray); font-size: 15px; margin-bottom: 26px; }
+  .stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 28px; }
+  .stat-box { background: var(--gray-light); border-radius: 14px; padding: 16px 12px; }
+  .stat-box .sn { font-size: 26px; font-weight: 800; }
+  .stat-box .sl { font-size: 12px; color: var(--gray); margin-top: 2px; }
+  .stat-box.sc .sn { color: var(--teal); }
+  .stat-box.sw .sn { color: var(--coral); }
+  .stat-box.st .sn { color: var(--purple); }
+  .message-box { background: var(--purple-light); border-radius: 16px; padding: 18px 22px; margin-bottom: 26px; font-size: 15px; color: var(--purple-dark); font-weight: 600; line-height: 1.5; }
+  .btn-pdf {
+    background: linear-gradient(135deg, #3C3489, #085041); color: white;
+    border: none; padding: 17px 46px; border-radius: 50px; font-size: 17px;
+    font-weight: 700; cursor: pointer; box-shadow: 0 4px 24px rgba(60,52,137,0.4);
+    transition: all 0.2s; font-family: inherit;
+  }
+  .btn-pdf:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(60,52,137,0.5); }
+  @media (max-width: 500px) {
+    .slide-card { padding: 22px 16px; }
+    .info-cards { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: 1fr; }
+    .header-info { gap: 6px; }
+    .question-text { font-size: 16px; }
+    body { padding-top: 105px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="fixed-header">
+  <div class="header-top">
+    <div class="header-title">COEDUCA &mdash; English Quiz</div>
+    <div class="header-info">
+      <span>Teacher: Jose E. Martinez</span>
+      <span>9th Grade / Sec. A</span>
+      <span id="hdr-name">Student: &mdash;</span>
+    </div>
+  </div>
+  <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress-fill"></div></div>
+  <div class="progress-label" id="progress-label">Topic: Past Regular and Irregular Verbs</div>
+</div>
+
+<div class="main">
+
+  <div id="welcome-screen">
+    <div class="welcome-icon">&#128218;</div>
+    <div class="welcome-title">Past Verbs Quiz</div>
+    <div class="welcome-sub">Regular &amp; Irregular Verbs in the Past Tense<br>COEDUCA &bull; Nineth Grade &bull; Section A</div>
+    <div class="info-cards">
+      <div class="info-card"><div class="lbl">Teacher</div><div class="val">Jose Eliseo Martinez</div></div>
+      <div class="info-card"><div class="lbl">School</div><div class="val">COEDUCA</div></div>
+      <div class="info-card"><div class="lbl">Topic</div><div class="val">Past Regular &amp; Irregular Verbs</div></div>
+      <div class="info-card"><div class="lbl">Total Questions</div><div class="val">20 questions</div></div>
+    </div>
+    <div class="name-section">
+      <label for="student-name">Enter your full name to begin:</label>
+      <input type="text" id="student-name" placeholder="e.g. Maria Garcia Lopez" />
+    </div>
+    <button class="btn-start" onclick="startQuiz()">Start Quiz &#8594;</button>
+  </div>
+
+  <div id="quiz-container" style="display:none;">
+    <div id="slides-wrapper"></div>
+    <div class="nav-row">
+      <button class="btn-nav btn-prev" id="btn-prev" onclick="navigate(-1)">&#8592; Previous</button>
+      <span id="slide-counter" style="color:var(--gray);font-size:14px;font-weight:700;"></span>
+      <button class="btn-nav btn-next" id="btn-next" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+  </div>
+
+  <div id="results-screen">
+    <div class="results-card">
+      <div class="score-circle" id="score-circle">
+        <div id="score-display">0</div>
+        <div class="score-label">out of 10</div>
+      </div>
+      <div class="results-title" id="results-title">Quiz Complete!</div>
+      <div class="results-sub" id="results-sub"></div>
+      <div class="stats-row">
+        <div class="stat-box sc"><div class="sn" id="stat-c">0</div><div class="sl">Correct</div></div>
+        <div class="stat-box sw"><div class="sn" id="stat-w">0</div><div class="sl">Incorrect</div></div>
+        <div class="stat-box st"><div class="sn">20</div><div class="sl">Total</div></div>
+      </div>
+      <div class="message-box" id="message-box"></div>
+      <button class="btn-pdf" onclick="downloadPDF()">&#11015; Download PDF Report</button>
+      <p style="margin-top:14px;font-size:13px;color:var(--gray);">Download and submit this file in Google Classroom.</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const QUESTIONS = [
+  { c:"cp", t:"tb-r", question:"Which of the following is a <strong>REGULAR</strong> verb?", hint:"Regular verbs form the past tense by simply adding -ed or -d.", options:["go","walk","swim","buy"], correct:1, explanation:"'Walk' is regular (walked). The others are irregular: go->went, swim->swam, buy->bought." },
+  { c:"ct", t:"tb-i", question:"Which of the following is an <strong>IRREGULAR</strong> verb?", hint:"Irregular verbs do NOT follow the -ed rule in the past tense.", options:["play","listen","run","clean"], correct:2, explanation:"'Run' is irregular (ran). Play->played, listen->listened, clean->cleaned are all regular." },
+  { c:"cc", t:"tb-s", question:"Which sentence uses the correct past tense of a <strong>REGULAR</strong> verb?", hint:"Find the sentence where the -ed ending is spelled correctly.", options:["She studyed all night.","He walkd to school.","They played soccer.","We stoped the car."], correct:2, explanation:"'Played' is correct. Errors: studyed->studied, walkd->walked, stoped->stopped (double p)." },
+  { c:"ck", t:"tb-i", question:"What is the correct <strong>past tense</strong> of the verb 'go'?", hint:"'Go' is one of the most common irregular verbs in English.", options:["goed","gone","went","goes"], correct:2, explanation:"'Went' is the simple past of 'go'. 'Gone' is the past participle used with have/has." },
+  { c:"cb", t:"tb-r", question:"Select the word that is a <strong>REGULAR verb in past tense</strong>:", hint:"Look for a verb that ends in -ed and is spelled correctly.", options:["ran","talked","ate","flew"], correct:1, explanation:"'Talked' comes from the regular verb 'talk' + -ed. Ran, ate, flew are irregular past forms." },
+  { c:"cp", t:"tb-m", question:"Which pair shows a <strong>REGULAR</strong> verb and its correct past tense?", hint:"A regular verb adds -ed (or just -d if it already ends in 'e').", options:["see -> saw","dance -> danced","eat -> ate","bring -> brought"], correct:1, explanation:"'Dance->danced' is correct. 'Dance' ends in -e, so we add -d. All others are irregular." },
+  { c:"ct", t:"tb-i", question:"What is the correct past tense of the <strong>IRREGULAR</strong> verb 'buy'?", hint:"This verb changes its vowel sound completely in the past tense.", options:["buyed","buied","bought","boughted"], correct:2, explanation:"'Bought' is the irregular past of 'buy'. Never add -ed to an irregular verb." },
+  { c:"cc", t:"tb-r", question:"Which group contains <strong>ONLY REGULAR</strong> verbs?", hint:"All regular verbs form the past by adding -ed or -d.", options:["swim, run, jump","work, help, study","think, write, say","go, come, make"], correct:1, explanation:"Work->worked, help->helped, study->studied. All three are regular verbs." },
+  { c:"cb", t:"tb-s", question:"How do you correctly write the past tense of 'stop'?", hint:"Short vowel + single consonant at the end = double the consonant!", options:["stoped","stopted","stopped","stopt"], correct:2, explanation:"'Stopped' is correct. When a verb ends in CVC (short vowel + consonant), we double the final consonant before -ed." },
+  { c:"ck", t:"tb-i", question:"Which sentence uses an <strong>IRREGULAR</strong> verb correctly in past tense?", hint:"Pick the sentence where the irregular verb is formed correctly.", options:["She thinked about it.","He runned fast.","They wrote a letter.","We goed home."], correct:2, explanation:"'Wrote' is the correct irregular past of 'write'. The others incorrectly add -ed to irregular verbs." },
+  { c:"cp", t:"tb-r", question:"Which verb becomes <strong>'carried'</strong> in the past tense?", hint:"This verb ends in consonant + y. What happens to the y?", options:["care","carry","caree","carri"], correct:1, explanation:"'Carry' -> 'carried'. When a verb ends in consonant + y, change the y to i and add -ed." },
+  { c:"ct", t:"tb-m", question:"Select the <strong>IRREGULAR</strong> verb from the options below:", hint:"One of these four verbs does NOT follow the -ed rule.", options:["cook","sleep","visit","answer"], correct:1, explanation:"'Sleep' is irregular (slept). Cook->cooked, visit->visited, answer->answered are regular." },
+  { c:"cc", t:"tb-s", question:"Which is the correct past tense of the verb <strong>'try'</strong>?", hint:"Remember the spelling rule for verbs ending in consonant + y.", options:["tryed","trying","tries","tried"], correct:3, explanation:"'Tried' is correct. y changes to i before -ed when preceded by a consonant." },
+  { c:"cb", t:"tb-i", question:"What is the correct past tense of <strong>'take'</strong>?", hint:"This is one of the most commonly used irregular verbs in English.", options:["taked","tooked","took","takened"], correct:2, explanation:"'Took' is the irregular simple past of 'take'. 'Taken' is the past participle." },
+  { c:"ck", t:"tb-r", question:"Which sentence contains a <strong>REGULAR</strong> verb used correctly in the past?", hint:"Look for the -ed verb that signals a regular past tense.", options:["He spoke quietly.","She decided to leave.","They drank water.","We wore uniforms."], correct:1, explanation:"'Decided' is the regular past of 'decide'. Spoke, drank, wore are irregular past forms." },
+  { c:"cp", t:"tb-m", question:"How many <strong>IRREGULAR</strong> verbs are in this list?  open, find, clean, feel, ask", hint:"Check each verb: does it change form completely, or just add -ed?", options:["None - all are regular","Two (find and feel)","Three (find, feel, open)","All five are irregular"], correct:1, explanation:"Two are irregular: find->found, feel->felt. Open->opened, clean->cleaned, ask->asked are regular." },
+  { c:"ct", t:"tb-s", question:"Which past tense form is <strong>INCORRECTLY</strong> spelled?", hint:"One option has a spelling mistake. Find the error!", options:["learned","planned","opend","stayed"], correct:2, explanation:"'Opend' is wrong - it should be 'opened'. Open ends in a vowel+consonant pattern that does NOT double the last letter." },
+  { c:"cc", t:"tb-i", question:'Complete the sentence: "Last week, she ___ a great book." (verb: read)', hint:"'Read' is irregular. Its past form is spelled the same but pronounced differently.", options:["readed","read","rode","red"], correct:1, explanation:"'Read' (past) is spelled the same as present but pronounced 'red'. It is an irregular verb." },
+  { c:"cb", t:"tb-r", question:"Which sentence has a <strong>REGULAR</strong> verb in the past tense?", hint:"Look for the sentence with an -ed ending used on a base verb.", options:["The dog bit the boy.","Maria cooked dinner.","They sang beautifully.","He broke the window."], correct:1, explanation:"'Cooked' is the regular past of 'cook'. Bit (bite), sang (sing), broke (break) are all irregular." },
+  { c:"ck", t:"tb-m", question:"Which option correctly pairs a <strong>REGULAR and IRREGULAR</strong> verb in past tense?", hint:"You need one verb that adds -ed, and one that changes its form completely.", options:["went / goed","jumped / broke","runned / walked","came / comed"], correct:1, explanation:"'Jumped' (regular: jump+-ed) and 'broke' (irregular past of break) is the correct pairing." }
+];
+
+let currentSlide = 0;
+let answers = new Array(QUESTIONS.length).fill(null);
+let studentName = "";
+
+function getBadgeLabel(t){
+  if(t==="tb-r") return "Regular Verbs";
+  if(t==="tb-i") return "Irregular Verbs";
+  if(t==="tb-m") return "Mixed";
+  if(t==="tb-s") return "Spelling";
+  return "Mixed";
+}
+
+function buildSlides() {
+  const wrapper = document.getElementById("slides-wrapper");
+  wrapper.innerHTML = "";
+  const L = ["A","B","C","D"];
+  QUESTIONS.forEach((q, i) => {
+    let opts = q.options.map((o, oi) =>
+      `<button class="option-btn" id="ob-${i}-${oi}" onclick="selectAnswer(${i},${oi})" data-q="${i}" data-o="${oi}">
+        <span class="opt-letter">${L[oi]}</span>${o}
+      </button>`).join("");
+    wrapper.insertAdjacentHTML("beforeend",
+      `<div class="slide" id="slide-${i}">
+        <div class="slide-card ${q.c}">
+          <span class="slide-num">Question ${i+1} of ${QUESTIONS.length}</span>
+          <span class="type-badge ${q.t}">${getBadgeLabel(q.t)}</span>
+          <div class="question-text">${q.question}</div>
+          <div class="question-hint">${q.hint}</div>
+          <div class="options-grid">${opts}</div>
+          <div class="feedback-box" id="fb-${i}"></div>
+        </div>
+      </div>`);
+  });
+}
+
+function startQuiz() {
+  const v = document.getElementById("student-name").value.trim();
+  if (!v) {
+    document.getElementById("student-name").style.borderColor = "var(--coral)";
+    document.getElementById("student-name").placeholder = "Please enter your name first!";
+    return;
+  }
+  studentName = v;
+  document.getElementById("hdr-name").textContent = "Student: " + studentName;
+  document.getElementById("welcome-screen").style.display = "none";
+  document.getElementById("quiz-container").style.display = "block";
+  buildSlides();
+  showSlide(0);
+}
+
+function showSlide(idx) {
+  document.querySelectorAll(".slide").forEach(s => s.classList.remove("active"));
+  const el = document.getElementById("slide-" + idx);
+  if (el) el.classList.add("active");
+  currentSlide = idx;
+  document.getElementById("slide-counter").textContent = (idx+1) + " / " + QUESTIONS.length;
+  document.getElementById("btn-prev").style.visibility = idx === 0 ? "hidden" : "visible";
+  const nb = document.getElementById("btn-next");
+  if (idx === QUESTIONS.length - 1) {
+    nb.textContent = "Finish Quiz"; nb.onclick = finishQuiz;
+    nb.style.background = "linear-gradient(135deg, #085041, #0C447C)";
+  } else {
+    nb.textContent = "Next \u2192"; nb.onclick = () => navigate(1);
+    nb.style.background = "";
+  }
+  if (answers[idx] !== null) highlightAnswer(idx, answers[idx]);
+  updateProgress();
+}
+
+function navigate(d) {
+  const n = currentSlide + d;
+  if (n >= 0 && n < QUESTIONS.length) showSlide(n);
+}
+
+function selectAnswer(qi, oi) {
+  if (answers[qi] !== null) return;
+  answers[qi] = oi;
+  highlightAnswer(qi, oi);
+  updateProgress();
+}
+
+function highlightAnswer(qi, sel) {
+  const q = QUESTIONS[qi];
+  document.querySelectorAll(`[data-q="${qi}"]`).forEach(b => b.disabled = true);
+  const sb = document.getElementById(`ob-${qi}-${sel}`);
+  const cb = document.getElementById(`ob-${qi}-${q.correct}`);
+  if (sb) sb.classList.add(sel === q.correct ? "correct" : "wrong");
+  if (sel !== q.correct && cb) cb.classList.add("correct");
+  const fb = document.getElementById("fb-" + qi);
+  if (fb) {
+    fb.className = "feedback-box show " + (sel === q.correct ? "correct" : "wrong");
+    fb.textContent = (sel === q.correct ? "Correct! " : "Incorrect. ") + q.explanation;
+  }
+}
+
+function updateProgress() {
+  const n = answers.filter(a => a !== null).length;
+  document.getElementById("progress-fill").style.width = (n / QUESTIONS.length * 100) + "%";
+  document.getElementById("progress-label").textContent = "Progress: " + n + " / " + QUESTIONS.length + " answered";
+}
+
+function calcScore() {
+  return answers.reduce((acc, a, i) => acc + (a !== null && a === QUESTIONS[i].correct ? 1 : 0), 0);
+}
+
+function finishQuiz() {
+  const unanswered = answers.filter(a => a === null).length;
+  if (unanswered > 0 && !confirm("You have " + unanswered + " unanswered question(s). Finish anyway?")) return;
+  document.getElementById("quiz-container").style.display = "none";
+  document.getElementById("results-screen").style.display = "block";
+  const correct = calcScore();
+  const grade = Math.round((correct / QUESTIONS.length) * 100) / 10;
+  document.getElementById("score-display").textContent = grade.toFixed(1);
+  document.getElementById("stat-c").textContent = correct;
+  document.getElementById("stat-w").textContent = QUESTIONS.length - correct;
+  document.getElementById("results-sub").textContent = studentName + " - Past Regular and Irregular Verbs";
+  const circle = document.getElementById("score-circle");
+  circle.className = "score-circle " + (grade >= 7 ? "grade-high" : grade >= 5 ? "grade-mid" : "grade-low");
+  let title, msg;
+  if (grade >= 9) { title = "Outstanding!"; msg = "Excellent work! You have a very strong understanding of regular and irregular past verbs. Keep it up!"; }
+  else if (grade >= 7) { title = "Great Job!"; msg = "Well done! You have a good grasp of past tenses. Review the questions you missed to perfect your knowledge."; }
+  else if (grade >= 5) { title = "Good Effort!"; msg = "You passed! But there is room to improve. Review the rules for forming regular and irregular past tenses."; }
+  else { title = "Keep Practicing!"; msg = "Don't give up! Regular and irregular past verbs take practice. Review your notes and try again."; }
+  document.getElementById("results-title").textContent = title;
+  document.getElementById("message-box").textContent = msg;
+  document.getElementById("progress-fill").style.width = "100%";
+  document.getElementById("progress-label").textContent = "Quiz complete! Download your PDF below.";
+}
+
+// ── PDF SANITIZER & GENERATOR ────────────────────────────────────
+function sanitize(str) {
+  if (!str) return "";
+  let s = String(str);
+  s = s.replace(/<[^>]*>/g, " ");
+  s = s.replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">")
+       .replace(/&nbsp;/g," ").replace(/&bull;/g,"*").replace(/&mdash;/g,"--")
+       .replace(/&ndash;/g,"-").replace(/&rarr;/g,"->").replace(/&larr;/g,"<-")
+       .replace(/&ldquo;/g,'"').replace(/&rdquo;/g,'"')
+       .replace(/&lsquo;/g,"'").replace(/&rsquo;/g,"'");
+  s = s.replace(/[\u2013\u2014]/g,"-").replace(/[\u2018\u2019]/g,"'")
+       .replace(/[\u201C\u201D]/g,'"').replace(/[\u2192]/g,"->")
+       .replace(/[\u2190]/g,"<-").replace(/[\u2022]/g,"*")
+       .replace(/[\u2190-\u21FF]/g,"->");
+  s = s.replace(/[\u00e9]/g,"e").replace(/[\u00ed]/g,"i").replace(/[\u00f3]/g,"o")
+       .replace(/[\u00fa]/g,"u").replace(/[\u00e1]/g,"a").replace(/[\u00e0]/g,"a")
+       .replace(/[\u00e8]/g,"e").replace(/[\u00f2]/g,"o").replace(/[\u00f9]/g,"u")
+       .replace(/[\u00c9]/g,"E").replace(/[\u00cd]/g,"I").replace(/[\u00d3]/g,"O")
+       .replace(/[\u00da]/g,"U").replace(/[\u00c1]/g,"A").replace(/[\u00f1]/g,"n")
+       .replace(/[\u00d1]/g,"N").replace(/[\u00fc]/g,"u").replace(/[\u00e4]/g,"a")
+       .replace(/[\u00f6]/g,"o").replace(/[\u00e2]/g,"a").replace(/[\u00ea]/g,"e")
+       .replace(/[\u00ee]/g,"i").replace(/[\u00f4]/g,"o").replace(/[\u00fb]/g,"u");
+  s = s.replace(/[^\x00-\xFF]/g,"");
+  return s.replace(/\s+/g," ").trim();
+}
+
+function downloadPDF() {
+  try {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit:"pt", format:"letter" });
+    const pw = doc.internal.pageSize.getWidth();
+    const ph = doc.internal.pageSize.getHeight();
+    const M = 50;
+    const UW = pw - M * 2;
+    let y = 0;
+
+    function fillRect(rx, ry, rw, rh, r, g, b, radius) {
+      doc.setFillColor(r, g, b);
+      if (radius) doc.roundedRect(rx, ry, rw, rh, radius, radius, "F");
+      else doc.rect(rx, ry, rw, rh, "F");
+    }
+
+    // ─── PAGE 1: HEADER ───
+    fillRect(0, 0, pw, 100, 38, 33, 89, 0);
+    doc.setFont("helvetica","bold"); doc.setFontSize(20); doc.setTextColor(255,255,255);
+    doc.text("COEDUCA - English Quiz Report", pw/2, 30, {align:"center"});
+    doc.setFontSize(13);
+    doc.text("Topic: Past Regular and Irregular Verbs", pw/2, 50, {align:"center"});
+    doc.setFont("helvetica","normal"); doc.setFontSize(11);
+    doc.text("Teacher: Jose Eliseo Martinez     Grade: Nineth     Section: A", pw/2, 68, {align:"center"});
+    doc.text("School: COEDUCA", pw/2, 84, {align:"center"});
+
+    y = 118;
+
+    // ─── STUDENT INFO BOX ───
+    fillRect(M, y, UW, 72, 238, 237, 254, 6);
+    doc.setFont("helvetica","bold"); doc.setFontSize(13); doc.setTextColor(60,52,137);
+    doc.text("Student Information", M+14, y+18);
+    doc.setFont("helvetica","normal"); doc.setFontSize(11); doc.setTextColor(38,33,92);
+    doc.text("Name: " + sanitize(studentName), M+14, y+36);
+    doc.text("Date: " + new Date().toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"}), M+14, y+52);
+
+    const correct = calcScore();
+    const grade = Math.round((correct / QUESTIONS.length) * 100) / 10;
+    const gc = grade >= 7 ? [8,80,65] : grade >= 5 ? [113,78,11] : [113,43,19];
+    
+    fillRect(pw-M-115, y+6, 115, 58, ...gc, 6);
+    doc.setFont("helvetica","bold"); doc.setFontSize(28); doc.setTextColor(255,255,255);
+    doc.text(grade.toFixed(1) + " / 10", pw-M-57, y+36, {align:"center"});
+    doc.setFontSize(10);
+    doc.text("FINAL GRADE", pw-M-57, y+52, {align:"center"});
+
+    doc.save(sanitize(studentName) + "_English_Quiz.pdf");
+    
+  } catch(err) {
+    console.error("Error generating PDF: ", err);
+    alert("Hubo un error al generar el PDF. Revisa la consola para más detalles.");
+  }
+}
+</script>
+</body>
+</html>
+
+```
